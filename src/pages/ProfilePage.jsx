@@ -19,10 +19,10 @@ export default function ProfilePage() {
     }
   return (
     <>
-            <Row>
-                <ProfileSideBar handleLogout={handleLogout} />
-                <ProfileMidBody />
-            </Row>
+        <Row>
+            <ProfileSideBar handleLogout={handleLogout} />
+            <ProfileMidBody />
+        </Row>
     </>
   )
 }
