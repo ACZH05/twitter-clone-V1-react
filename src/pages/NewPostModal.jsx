@@ -1,31 +1,16 @@
-import axios from "axios"
-import jwtDecode from "jwt-decode"
 import { useState } from "react"
 import { Button, Form, Modal } from "react-bootstrap"
+import { useDispatch } from "react-redux"
+import { savePost } from "../features/posts/postsSlice"
 
 export default function NewPostModal({ show, handleClose }) {
     const [postContent, setPostContent] = useState("")
+    const dispatch = useDispatch()
 
     const handleSave = () => {
-        const token = localStorage.getItem("authToken")
-        const decode = jwtDecode(token)
-        const userId = decode.id
-
-        const data = {
-            title: "Post Title",
-            content: postContent,
-            user_id: userId
-        }
-
-        axios
-            .post("https://twitter-api-alfred-chinchin.sigma-school-full-stack.repl.co/posts", data)
-            .then((res) => {
-                console.log("Success: ", res.data)
-                handleClose()
-            })
-            .catch((error) =>[
-                console.error("Error: ", error)
-            ])
+        dispatch(savePost(postContent))
+        handleClose()
+        setPostContent("")
     }
     return (
         <>
