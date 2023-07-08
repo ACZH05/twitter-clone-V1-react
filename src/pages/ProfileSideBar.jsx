@@ -11,7 +11,7 @@ export default function ProfileSideBar({ handleLogout }) {
   return (
     <Col
         sm={2}
-        className="d-flex flex-column justify-content-start align-items-start bg-light vh-100"
+        className="d-flex flex-column justify-content-start align-items-start bg-light vh-100 ps-4"
         style={{ position: "sticky", top: 0 }}
     >
         <IconButton className="bi bi-twitter" isTop />
@@ -26,7 +26,7 @@ export default function ProfileSideBar({ handleLogout }) {
         <IconButton className="bi bi-filter-circle" text="More" />
         <IconButton className="bi bi-door-closed" text="Logout" onClick={handleLogout} />
         
-        <Button className="rounded-pill w-100 mb-3" onClick={handleShow}>Tweet</Button>
+        <Button className="rounded-pill w-75 mt-1 ms-3" onClick={handleShow}>Tweet</Button>
         <NewPostModal show={show} handleClose={handleClose} />
     </Col>
   )
