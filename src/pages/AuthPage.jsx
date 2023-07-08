@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { Button, Col, Form, Image, Modal, Row } from "react-bootstrap"
+import { Button, Col, Form, Image, Modal, Row, Spinner } from "react-bootstrap"
 import axios from "axios"
 import useLocalStorage from "use-local-storage"
 import { useNavigate } from "react-router-dom"
@@ -13,6 +13,7 @@ export default function AuthPage() {
 
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
+    const [isLoading, setIsLoading] = useState(false)
     const [authToken, setAuthToken] = useLocalStorage("authToken", "")
 
     const navigate = useNavigate()
@@ -23,8 +24,13 @@ export default function AuthPage() {
         }
     }, [authToken, navigate])
 
-    const handleLogin = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault()
+        setIsLoading(true)
+        modalShow === "SignUp" ? handleSignUp() : handleLogin()
+    }
+
+    const handleLogin = async () => {
         try {
             const res = await axios.post(`${url}/login`, { username, password })
             if (res.data && res.data.auth === true && res.data.token){
@@ -35,10 +41,10 @@ export default function AuthPage() {
         catch (error) {
             console.error(error)
         }
+        setIsLoading(false)
     }
 
-    const handleSignUp = async (e) => {
-        e.preventDefault()
+    const handleSignUp = async () => {
         try {
             const res = await axios.post(`${url}/signup`, { username, password })
             console.log(res.data)
@@ -46,6 +52,7 @@ export default function AuthPage() {
         catch (error) {
             console.error(error)
         }
+        setIsLoading(false)
     }
     const handleClose = () => setModalShow(null)
   return (
@@ -76,7 +83,7 @@ export default function AuthPage() {
                 <h2 className="mb-4" style={{ fontWeight: 'bold' }}>
                     {modalShow === "SignUp" ? "Create your account" : "Log in to your account"}
                 </h2>
-                <Form className="d-grid gap-2 px-5" onSubmit={modalShow === "SignUp" ? handleSignUp : handleLogin}>
+                <Form className="d-grid gap-2 px-5" onSubmit={handleSubmit}>
                     <Form.Group className="mb-3" controlId="formBasicEmail">
                         <Form.Control onChange={(e) => setUsername(e.target.value)} type="email" placeholder="Enter Email" />
                     </Form.Group>
@@ -85,9 +92,15 @@ export default function AuthPage() {
                         <Form.Control onChange={(e) => setPassword(e.target.value)} type="password" placeholder="Password" />
                     </Form.Group>
                     <p style={{ fontSize: "12px" }}>By signing up, you agree to the Term of Service and Privacy Policy, including Cookie Use.</p>
-                    <Button className="rounded-pill" type="submit">
-                        {modalShow === "SignUp" ? "Sign Up" : "Log in"}
-                    </Button>
+                        {isLoading ? (
+                            <Button className="rounded-pill" type="submit" disabled>
+                                <Spinner animation="border" variant="secondary" size="sm" />
+                            </Button>
+                        ) : (
+                            <Button className="rounded-pill" type="submit">
+                                {modalShow === "SignUp" ? "Sign Up" : "Log in"}
+                            </Button>
+                        )}
                 </Form>
             </Modal.Body>
         </Modal>
