@@ -14,6 +14,7 @@ export default function AuthPage() {
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
     const [isLoading, setIsLoading] = useState(false)
+    const [isError, setIsError] = useState("")
     const [authToken, setAuthToken] = useLocalStorage("authToken", "")
 
     const navigate = useNavigate()
@@ -40,6 +41,10 @@ export default function AuthPage() {
         }
         catch (error) {
             console.error(error)
+            const status = error.response.status
+            console.log(status)
+            if (status >= 400 && status <= 500) setIsError(error.response.data.message)
+            console.log(isError)
         }
         setIsLoading(false)
     }
@@ -51,10 +56,15 @@ export default function AuthPage() {
         }
         catch (error) {
             console.error(error)
+            const status = error.response.status
+            if (status >= 400 || status <= 500) setIsError(error.response.data.message)
         }
         setIsLoading(false)
     }
-    const handleClose = () => setModalShow(null)
+    const handleClose = () => {
+        setModalShow(null)
+        setIsError("")
+    }
   return (
     <Row>
       <Col sm={5}>
@@ -92,15 +102,16 @@ export default function AuthPage() {
                         <Form.Control onChange={(e) => setPassword(e.target.value)} type="password" placeholder="Password" />
                     </Form.Group>
                     <p style={{ fontSize: "12px" }}>By signing up, you agree to the Term of Service and Privacy Policy, including Cookie Use.</p>
-                        {isLoading ? (
-                            <Button className="rounded-pill" type="submit" disabled>
-                                <Spinner animation="border" variant="secondary" size="sm" />
-                            </Button>
-                        ) : (
-                            <Button className="rounded-pill" type="submit">
-                                {modalShow === "SignUp" ? "Sign Up" : "Log in"}
-                            </Button>
-                        )}
+                    <p className="text-danger">{isError}</p>
+                    {isLoading ? (
+                        <Button className="rounded-pill" type="submit" disabled>
+                            <Spinner animation="border" variant="secondary" size="sm" />
+                        </Button>
+                    ) : (
+                        <Button className="rounded-pill" type="submit">
+                            {modalShow === "SignUp" ? "Sign Up" : "Log in"}
+                        </Button>
+                    )}
                 </Form>
             </Modal.Body>
         </Modal>
