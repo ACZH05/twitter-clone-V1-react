@@ -36,8 +36,15 @@ export default function AuthPage() {
         }
         catch (error) {
             console.error(error)
+            if (error.code === "auth/wrong-password") {
+                setIsError("Email or password incorrect.")
+            }
+            else if (error.code === "auth/too-many-requests") {
+                setIsError("Sorry, you have exceeded the maximum number of allowed login attempts. For security purposes, please try again later.")
+            }
         }
         setIsLoading(false)
+
     }
 
     const handleSignUp = async () => {
@@ -51,6 +58,7 @@ export default function AuthPage() {
         }
         catch (error) {
             console.error(error)
+            setIsError("Email already existed.")
         }
         setIsLoading(false)
     }
