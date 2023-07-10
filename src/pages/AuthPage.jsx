@@ -1,12 +1,11 @@
-import { useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { Button, Col, Form, Image, Modal, Row, Spinner } from "react-bootstrap"
-import axios from "axios"
-import useLocalStorage from "use-local-storage"
 import { useNavigate } from "react-router-dom"
+import { AuthContext } from "../components/AuthProvider"
+import { GoogleAuthProvider, createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword, signInWithPopup } from "firebase/auth"
 
 export default function AuthPage() {
     const loginImage = "https://sig1.co/img-twitter-1"
-    const url = "https://auth-back-end-alfred-chinchin.sigma-school-full-stack.repl.co"
     const [modalShow, setModalShow] = useState(null)
     const handleShowSignUp = () => setModalShow("SignUp")
     const handleShowLogin = () => setModalShow("Login")
@@ -15,15 +14,15 @@ export default function AuthPage() {
     const [password, setPassword] = useState("")
     const [isLoading, setIsLoading] = useState(false)
     const [isError, setIsError] = useState("")
-    const [authToken, setAuthToken] = useLocalStorage("authToken", "")
 
+    const auth = getAuth()
+    const provider = new GoogleAuthProvider()
+    const { currentUser } = useContext(AuthContext)
     const navigate = useNavigate()
 
     useEffect(() => {
-        if (authToken) {
-            navigate("/profile")
-        }
-    }, [authToken, navigate])
+        if (currentUser) navigate("/profile")
+    }, [currentUser, navigate])
 
     const handleSubmit = (e) => {
         e.preventDefault()
@@ -33,34 +32,38 @@ export default function AuthPage() {
 
     const handleLogin = async () => {
         try {
-            const res = await axios.post(`${url}/login`, { username, password })
-            if (res.data && res.data.auth === true && res.data.token){
-                setAuthToken(res.data.token)
-                console.log("Login was successful, token saved")
-            }
+            await signInWithEmailAndPassword(auth, username, password)
         }
         catch (error) {
             console.error(error)
-            const status = error.response.status
-            console.log(status)
-            if (status >= 400 && status <= 500) setIsError(error.response.data.message)
-            console.log(isError)
         }
         setIsLoading(false)
     }
 
     const handleSignUp = async () => {
         try {
-            const res = await axios.post(`${url}/signup`, { username, password })
-            console.log(res.data)
+            const res = await createUserWithEmailAndPassword(
+                auth,
+                username,
+                password
+            )
+            console.log(res.user)
         }
         catch (error) {
             console.error(error)
-            const status = error.response.status
-            if (status >= 400 || status <= 500) setIsError(error.response.data.message)
         }
         setIsLoading(false)
     }
+
+    const handleGoogleLogin = async () => {
+        try {
+            await signInWithPopup(auth, provider)
+        }
+        catch (error) {
+            console.error(error)
+        }
+    }
+
     const handleClose = () => {
         setModalShow(null)
         setIsError("")
@@ -75,7 +78,7 @@ export default function AuthPage() {
         <p className="mt-4" style={{ fontSize: 64 }}>Happening Now</p>
         <h2 className="my-5" style={{ fontSize: 31 }}>Join Twitter Today.</h2>
         <Col sm={5} className="d-grid gap-2">
-            <Button className="rounded-pill" variant="outline-dark">
+            <Button className="rounded-pill" variant="outline-dark" onClick={handleGoogleLogin}>
                 <i className="bi bi-google" /> Sign up with google
             </Button>
             <Button className="rounded-pill" variant="outline-dark">
