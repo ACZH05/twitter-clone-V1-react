@@ -3,9 +3,15 @@ import { Button, Col, Image, Row } from "react-bootstrap"
 import { useDispatch } from "react-redux"
 import { AuthContext } from "./AuthProvider"
 import { likePost, removeLikeFromPost } from "../features/posts/postsSlice"
+import UpdatePostModal from "./UpdatePostModal"
 
 export default function ProfilePostCard({ post }) {
     const pic = "https://pbs.twimg.com/profile_images/1587405892437221376/h167Jlb2_400x400.jpg"
+
+    const [showUpdateModal, setShowUpdateModal] = useState(false)
+    const handleShowUpdateModal = () => setShowUpdateModal(true)
+    const handleCloseUpdateModal = () => setShowUpdateModal(false)
+
     const { content, id: postId, imageUrl } = post
     const [likes, setLikes] = useState(post.likes || [])
     const dispatch = useDispatch()
@@ -56,8 +62,12 @@ export default function ProfilePostCard({ post }) {
                 <i className="bi bi-graph-up" />
             </Button>
             <Button variant="light">
-                <i className="bi bi-upload" />
+                <i className="bi bi-pencil-square" onClick={handleShowUpdateModal} />
             </Button>
+            <Button variant="light">
+                <i className="bi bi-trash" />
+            </Button>
+            <UpdatePostModal show={showUpdateModal} handleClose={handleCloseUpdateModal} postId={postId} originalPostContent={content} />
         </div>
       </Col>
     </Row>
