@@ -92,6 +92,9 @@ export default function AuthPage() {
             <Button className="rounded-pill" variant="outline-dark">
                 <i className="bi bi-apple" /> Sign up with Apple
             </Button>
+            <Button className="rounded-pill" variant="outline-dark">
+                <i className="bi bi-facebook" /> Sign up with Facebook
+            </Button>
             <p style={{ textAlign: 'center' }}>or</p>
             <Button className="rounded-pill" onClick={handleShowSignUp}>Create an account</Button>
             <p style={{ fontSize: "12px" }}>By signing up, you agree to the Term of Service and Privacy Policy, including Cookie Use.</p>
